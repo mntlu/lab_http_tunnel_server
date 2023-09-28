@@ -4,6 +4,14 @@ const express = require('express');
 const morgan = require('morgan');
 const { Server } = require('socket.io');
 const jwt = require('jsonwebtoken');
+const cors = require('cors')
+
+
+process.env.JWT_GENERATOR_USERNAME = 'aa'
+process.env.JWT_GENERATOR_PASSWORD = 'bb'
+
+process.env.SECRET_KEY = 'aa'
+
 
 require('dotenv').config();
 
@@ -101,6 +109,8 @@ io.on('connection', (socket) => {
   socket.on('message', onMessage);
   socket.once('disconnect', onDisconnect);
 });
+
+app.use(cors())
 
 app.use(morgan('tiny'));
 app.get('/tunnel_jwt_generator', (req, res) => {
