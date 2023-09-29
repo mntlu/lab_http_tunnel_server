@@ -41,7 +41,7 @@ function setTunnelSocket(host, pathPrefix, socket) {
 }
 
 function removeTunnelSocket(host, pathPrefix) {
-  tunnelSockets = tunnelSockets.filter((s) => 
+  tunnelSockets = tunnelSockets.filter((s) =>
     !(s.host === host && s.pathPrefix === pathPrefix)
   );
   console.log('tunnelSockets: ', tunnelSockets);
@@ -77,10 +77,10 @@ io.use((socket, next) => {
   if (getTunnelSocket(connectHost, pathPrefix)) {
     return next(new Error(`${connectHost} has a existing connection`));
   }
-  if (!socket.handshake.auth || !socket.handshake.auth.token){
+  if (!socket.handshake.auth || !socket.handshake.auth.token) {
     next(new Error('Authentication error'));
   }
-  jwt.verify(socket.handshake.auth.token, process.env.SECRET_KEY, function(err, decoded) {
+  jwt.verify(socket.handshake.auth.token, process.env.SECRET_KEY, function (err, decoded) {
     if (err) {
       return next(new Error('Authentication error'));
     }
@@ -88,7 +88,7 @@ io.use((socket, next) => {
       return next(new Error('Authentication error'));
     }
     next();
-  });  
+  });
 });
 
 io.on('connection', (socket) => {
@@ -113,6 +113,12 @@ io.on('connection', (socket) => {
 app.use(cors())
 
 app.use(morgan('tiny'));
+app.get('/aaa', (req, res) => {
+  res.sendFile(__dirname + '/sunrise.jpg');
+})
+app.get('/ccc', (req, res) => {
+  res.send('ccc')
+})
 app.get('/tunnel_jwt_generator', (req, res) => {
   if (!process.env.JWT_GENERATOR_USERNAME || !process.env.JWT_GENERATOR_PASSWORD) {
     res.status(404);
@@ -219,7 +225,7 @@ function createSocketHttpHeader(line, headers) {
     }
     return head;
   }, [line])
-  .join('\r\n') + '\r\n\r\n';
+    .join('\r\n') + '\r\n\r\n';
 }
 
 httpServer.on('upgrade', (req, socket, head) => {
@@ -293,5 +299,6 @@ httpServer.on('upgrade', (req, socket, head) => {
   tunnelResponse.once('response', onResponse);
 });
 
-httpServer.listen(process.env.PORT || 3000);
+process.env.PORT = 8080
+httpServer.listen(process.env.PORT || 3000, '0.0.0.0');
 console.log(`app start at http://localhost:${process.env.PORT || 3000}`);
