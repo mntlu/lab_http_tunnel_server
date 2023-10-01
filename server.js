@@ -113,12 +113,22 @@ io.on('connection', (socket) => {
 app.use(cors())
 
 app.use(morgan('tiny'));
-app.get('/aaa', (req, res) => {
+app.get('/__img', (req, res) => {
   res.sendFile(__dirname + '/sunrise.jpg');
 })
-app.get('/ccc', (req, res) => {
+app.get('/__txt', (req, res) => {
   res.send('ccc')
 })
+app.post('/__stream', async (req, res) => {
+  while (true) {
+    const { value, done } = await req.read();
+    if (done) break;
+    console.log('Received', value);
+  }
+  console.log('req fully received');
+  res.send('1111')
+})
+
 app.get('/tunnel_jwt_generator', (req, res) => {
   if (!process.env.JWT_GENERATOR_USERNAME || !process.env.JWT_GENERATOR_PASSWORD) {
     res.status(404);
