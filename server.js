@@ -1,7 +1,7 @@
 const http = require('http');
 const { v4: uuidV4 } = require('uuid');
 const express = require('express');
-const http2Express = require('http2-express-bridge')
+// const http2Express = require('http2-express-bridge')
 
 const morgan = require('morgan');
 const { Server } = require('socket.io');
