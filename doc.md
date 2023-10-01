@@ -18,3 +18,9 @@ got:
 https://undici.nodejs.org/#/?id=undicifetchinput-init-promise -->
   https://fetch.spec.whatwg.org/#dom-requestinit-duplex   (search: duplex) -->
     https://github.com/whatwg/fetch/issues/1254
+
+
+# WebTransport
+https://groups.google.com/a/chromium.org/g/web-transport-dev/c/-nRKS9ws8tc?pli=1
+https://developer.chrome.com/zh/articles/webtransport/
+google WebTransport
