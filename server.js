@@ -16,6 +16,7 @@ process.env.SECRET_KEY = 'aa'
 require('dotenv').config();
 
 const { TunnelRequest, TunnelResponse } = require('./lib');
+const { Stream } = require('stream');
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -122,20 +123,38 @@ app.get('/__txt', (req, res) => {
 
 
 app.post('/__stream', async (req, res) => {
-  // https://nodejs.org/en/docs/guides/anatomy-of-an-http-transaction
-  let body = [];
-  req
-    .on('data', chunk => {
-      body.push(chunk);
-      console.log('Received', chunk, chunk.toString());
-    })
-    .on('end', () => {
-      body = Buffer.concat(body).toString();
-      // at this point, `body` has the entire request body stored in it as a string
 
-      console.log('req fully received, content is:', body);
-      res.send('got: ' + body)
-    });
+  const reader = Stream.Readable.toWeb(req).getReader()
+
+  let body = [];
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    body.push(value);
+    console.log('Received', value, value.toString());
+  }
+
+  body = Buffer.concat(body).toString();
+  console.log('Response fully received:', body);
+  res.send('got: ' + body)
+
+  return
+
+
+  // 以下方式也可以读取数据
+  // // https://nodejs.org/en/docs/guides/anatomy-of-an-http-transaction
+  // req
+  //   .on('data', chunk => {
+  //     body.push(chunk);
+  //     console.log('Received', chunk, chunk.toString());
+  //   })
+  //   .on('end', () => {
+  //     body = Buffer.concat(body).toString();
+  //     // at this point, `body` has the entire request body stored in it as a string
+
+  //     console.log('req fully received, content is:', body);
+  //     res.send('got: ' + body)
+  //   });
 })
 
 app.get('/tunnel_jwt_generator', (req, res) => {
