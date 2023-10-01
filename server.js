@@ -119,14 +119,23 @@ app.get('/__img', (req, res) => {
 app.get('/__txt', (req, res) => {
   res.send('ccc')
 })
+
+
 app.post('/__stream', async (req, res) => {
-  while (true) {
-    const { value, done } = await req.read();
-    if (done) break;
-    console.log('Received', value);
-  }
-  console.log('req fully received');
-  res.send('1111')
+  // https://nodejs.org/en/docs/guides/anatomy-of-an-http-transaction
+  let body = [];
+  req
+    .on('data', chunk => {
+      body.push(chunk);
+      console.log('Received', chunk, chunk.toString());
+    })
+    .on('end', () => {
+      body = Buffer.concat(body).toString();
+      // at this point, `body` has the entire request body stored in it as a string
+
+      console.log('req fully received, content is:', body);
+      res.send('got: ' + body)
+    });
 })
 
 app.get('/tunnel_jwt_generator', (req, res) => {
@@ -311,4 +320,4 @@ httpServer.on('upgrade', (req, socket, head) => {
 
 process.env.PORT = 8080
 httpServer.listen(process.env.PORT || 3000, '0.0.0.0');
-console.log(`app start at http://localhost:${process.env.PORT || 3000}`);
+console.log(`app start at port: ${process.env.PORT || 3000}`);
