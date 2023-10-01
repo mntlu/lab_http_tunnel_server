@@ -8,3 +8,13 @@ https://developer.chrome.com/articles/fetch-streaming-requests/#doesnt-work-on-h
 
 # http2
 https://nodejs.org/api/http2.html
+
+
+# ref
+https://developer.chrome.com/articles/fetch-streaming-requests/
+
+google: fetch duplex: 'full'
+got:
+https://undici.nodejs.org/#/?id=undicifetchinput-init-promise -->
+  https://fetch.spec.whatwg.org/#dom-requestinit-duplex   (search: duplex) -->
+    https://github.com/whatwg/fetch/issues/1254
