@@ -1,10 +1,20 @@
 const http = require('http');
 const { v4: uuidV4 } = require('uuid');
 const express = require('express');
+const http2Express = require('http2-express-bridge')
+
 const morgan = require('morgan');
 const { Server } = require('socket.io');
 const jwt = require('jsonwebtoken');
 const cors = require('cors')
+
+const https = require('node:https');
+const http2 = require('node:http2');
+const fs = require('node:fs');
+const options = {
+  key: fs.readFileSync('localhost-privkey.pem'),
+  cert: fs.readFileSync('localhost-cert.pem'),
+};
 
 
 process.env.JWT_GENERATOR_USERNAME = 'aa'
@@ -19,7 +29,11 @@ const { TunnelRequest, TunnelResponse } = require('./lib');
 const { Stream } = require('stream');
 
 const app = express();
+// const app = http2Express(express)
+
 const httpServer = http.createServer(app);
+// const httpServer = https.createServer(options, app);  // test ok: curl -k https://localhost:8080/__txt
+// const httpServer = http2.createServer(options, app);  // test not ok: curl -k https://localhost:8080/__txt
 const webTunnelPath = '/$web_tunnel';
 const io = new Server(httpServer, {
   path: webTunnelPath,
