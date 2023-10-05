@@ -132,13 +132,27 @@ app.get('/__img', (req, res) => {
   res.sendFile(__dirname + '/sunrise.jpg');
 })
 app.get('/__txt', (req, res) => {
-  res.send('ccc')
+  res.send('txt')
+})
+
+app.post('/__json', async (req, res) => {
+  const reader = Stream.Readable.toWeb(req).getReader()
+
+  let body = [];
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    body.push(value);
+    console.log('Received', value, value.toString());
+  }
+
+  body = Buffer.concat(body).toString();
+  console.log('Response fully received:', body);
+  res.send('got posted data: ' + body)
 })
 
 
 app.post('/__stream', async (req, res) => {
-
-  // res.send('got: ' + '66666')
 
   const reader = Stream.Readable.toWeb(req).getReader()
 
@@ -152,7 +166,7 @@ app.post('/__stream', async (req, res) => {
 
   body = Buffer.concat(body).toString();
   console.log('Response fully received:', body);
-  res.send('got: ' + body)
+  res.send('server got: ' + body)
 
   return
 
@@ -176,7 +190,7 @@ app.post('/__stream', async (req, res) => {
 app.get('/tunnel_jwt_generator', (req, res) => {
   if (!process.env.JWT_GENERATOR_USERNAME || !process.env.JWT_GENERATOR_PASSWORD) {
     res.status(404);
-    res.send('Not found');
+    res.send('Not Found.');
     return;
   }
   if (
@@ -215,6 +229,7 @@ app.use('/', (req, res) => {
   if (!tunnelSocket) {
     res.status(404);
     res.send('Not Found');
+    console.log('getAvailableTunnelSocket Not Found')
     return;
   }
   const requestId = uuidV4();
@@ -283,6 +298,7 @@ function createSocketHttpHeader(line, headers) {
 }
 
 httpServer.on('upgrade', (req, socket, head) => {
+  debugger
   if (req.url.indexOf(webTunnelPath) === 0) {
     return;
   }
